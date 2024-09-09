@@ -9,7 +9,7 @@ from .models import CustomUser
 import json
 
 @api_view(['POST', 'GET'])
-def register(request):
+def user(request):
     
     """
     Handles user registration and retrieval:
@@ -20,6 +20,7 @@ def register(request):
     """
 
     if request.method == "POST":
+        
         username = request.data.get('username')
         password = request.data.get('password')
 
