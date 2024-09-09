@@ -8,9 +8,17 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser
 import json
 
-# user regitration function connected to a POST api view
 @api_view(['POST', 'GET'])
 def register(request):
+    
+    """
+    Handles user registration and retrieval:
+    - POST: Registers a new user with a username and password.
+      Responds with 400 Bad Request if username or password is missing,
+      or if the username already exists. On success, responds with a 201 Created status.
+    - GET: Returns a list of all users.
+    """
+
     if request.method == "POST":
         username = request.data.get('username')
         password = request.data.get('password')
@@ -23,10 +31,10 @@ def register(request):
 
         user = CustomUser(username=username, password=make_password(password))
         user.save()
-        return Response({'message': 'User created successfully', 'status': status.HTTP_201_CREATED}, status=status.HTTP_201_CREATED)
+
+        return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
+    
     if request.method == "GET":
-        # users = CustomUser.objects.all()
-        # return Response(users)
         data = CustomUser.objects.values()
         return Response(list(data))
 
