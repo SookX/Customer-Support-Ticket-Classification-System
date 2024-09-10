@@ -11,14 +11,19 @@ df = pd.read_csv('./data/data/customer_support_tickets_preprocessed.csv')
 X = df['Ticket Description']
 y = df['Ticket Subject']
 
+categories = y.unique()
+category_to_num = {category: idx for idx, category in enumerate(categories)}
+
+y_encoded = y.map(category_to_num)
 # Split the data
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
+X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size = 0.2)
 
 train_sentences = X_train.tolist()
 test_sentences = X_test.tolist()
 
 # Create the tokenizer
+
 
 MAX_TOKENS = 65000
 OUTPUT_SEQ_LEN = 500

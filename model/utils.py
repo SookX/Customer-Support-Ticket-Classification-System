@@ -1,5 +1,6 @@
 import numpy as np
-from activation import relu, softmax
+from activation import relu
+from scipy.special import softmax
 
 def get_dataset_dimensions(features, labels):
 
@@ -51,7 +52,7 @@ def initialize_parameters(layer_dims):
 
     for l in range(1, L):
 
-        parameters['W' + str(l)] = np.random.rand(layer_dims[l], layer_dims[l - 1])
+        parameters['W' + str(l)] = np.random.rand(layer_dims[l], layer_dims[l - 1]) * 0.01
         parameters['b' + str(l)] = np.zeros((layer_dims[l], 1))
 
     return parameters
@@ -84,17 +85,17 @@ def forward_propagation(X, parameters):
     ZL = np.dot(parameters['W' + str(L)], A_temp) + parameters['b' + str(L)]
     cache['Z' + str(L)] = ZL
     
-    yhat = softmax(ZL)
-    print(yhat.dtype)
+
+    yhat = softmax(ZL, axis = 1)
+    
     return yhat, cache
 
 
 def sparse_categorical_crossentropy(y_true, y_pred):
-
+  
     y_true_onehot = np.zeros_like(y_pred)
     y_true_onehot[np.arange(len(y_true)), y_true] = 1
 
-    # calculate loss
     loss = -np.mean(np.sum(y_true_onehot * np.log(y_pred), axis=-1))
 
     return loss

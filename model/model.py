@@ -18,6 +18,6 @@ class MCC:
         parameters = initialize_parameters(layers_dim)
         yhat, cache = forward_propagation(X, parameters)
         cost = sparse_categorical_crossentropy(y, yhat)
-        
+        print(cost)
         #for key, value in parameters.items():
         #    print(f"Weight {key} with size {value.shape}")
