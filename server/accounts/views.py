@@ -40,24 +40,56 @@ def user(request):
         data = CustomUser.objects.values()
         return Response(list(data))
 
-# login function with JWT tokens auth
-# @api_view(['POST'])
-# def login(request):
-#     username = request.data.get('username')
-#     password = request.data.get('password')
+@api_view(['POST'])
+def login(request):
+    
+    """
+    Handles user login and authentication:
+    - POST: Authenticates a user using the provided username and password.
+        If either username or password is missing, responds with 400 Bad Request.
+        If the credentials are incorrect, responds with 401 Unauthorized.
+        On successful authentication, returns a 200 OK status with a refresh token
+        and an access token for the authenticated user.
+    """
+    
+    username = request.data.get('username')
+    password = request.data.get('password')
 
-#     if not username or not password:
-#         return Response({'error': 'Username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+    if not username or not password:
+        return Response({'error': 'Username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
 
-#     user = authenticate(username=username, password=password)
-#     if user is None:
-#         return Response({'error': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
+    user = authenticate(username=username, password=password)
+    if user is None:
+        return Response({'error': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
-#     refresh = RefreshToken.for_user(user)
-#     return Response({
-#         'refresh': str(refresh),
-#         'access': str(refresh.access_token),    
-#     }, status=status.HTTP_200_OK)
+    refresh = RefreshToken.for_user(user)
+    return Response({
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),    
+    }, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def register(request):
+    
+    """
+    Handles user registration and retrieval:
+    - POST: Registers a new user with a username and password.
+      Responds with 400 Bad Request if username or password is missing,
+      or if the username already exists. On success, responds with a 201 Created status.
+    """
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    if not username or not password:
+        return Response({'error': 'Username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if CustomUser.objects.filter(username=username).exists():
+        return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = CustomUser(username=username, password=make_password(password))
+    user.save()
+
+    return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def user_detail(request, id):
