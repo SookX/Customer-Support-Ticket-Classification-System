@@ -15,9 +15,28 @@ class MCC:
         epochs = self.epochs
         learning_rate = self.learning_rate
         layers_dim = self.layers_dim
-        parameters = initialize_parameters(layers_dim)
+
+        # Initialize model parameters
+        self.parameters = initialize_parameters(layers_dim)
+        parameters = self.parameters
+
+        # Perform forward propagation
         yhat, cache = forward_propagation(X, parameters)
+
+        # Compute the cost using sparse categorical cross-entropy
         cost = sparse_categorical_crossentropy(y, yhat)
-        print(cost)
-        #for key, value in parameters.items():
-        #    print(f"Weight {key} with size {value.shape}")
+
+    
+    def predict(self, X):
+       parameters = self.parameters
+       
+       # Perform forward propagation to get predictions
+       yhat, _ = forward_propagation(X, parameters)
+       
+       # Get the predicted class with the highest probability for each sample
+       predictions = np.argmax(yhat, axis=0)
+       
+       return predictions
+
+    def load_weights(self, parameters):
+        self.parameters = parameters
