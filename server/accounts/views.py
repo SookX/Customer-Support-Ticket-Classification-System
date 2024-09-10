@@ -81,7 +81,7 @@ def user_detail(request, id):
         }   
         return Response(data)
 
-    elif request.method == 'PATCH':
+    if request.method == 'PATCH':
         username = request.data.get('username', None)
         if username:
             user.username = username
@@ -89,6 +89,6 @@ def user_detail(request, id):
             return Response({'username': user.username})
         return Response({'error': 'Username not provided'}, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
+    if request.method == 'DELETE':
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
