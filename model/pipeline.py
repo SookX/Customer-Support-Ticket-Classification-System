@@ -46,3 +46,5 @@ print(f"Number of input features: {nx}\n")
 
 multi_class_classifier = MCC(X_train_final, y_train_final, 1000, 0.005, [500, 10, 10, 16])
 multi_class_classifier.fit()
+yhat_test = multi_class_classifier.predict(X_test_final)
+print(yhat_test.shape)
