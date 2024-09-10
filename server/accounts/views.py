@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser
 import json
+from django.shortcuts import get_object_or_404
 
 @api_view(['POST', 'GET'])
 def user(request):
@@ -58,19 +59,36 @@ def user(request):
 #         'access': str(refresh.access_token),    
 #     }, status=status.HTTP_200_OK)
 
-@api_view(['DELETE'])
-def delete_user(request, id):
+@api_view(['GET', 'PATCH', 'DELETE'])
+def user_detail(request, id):
     
     """
-    Handles user deletion:
-    - DELETE: Deletes a user identified by their primary key (ID).
-    Responds with 204 No Content on successful deletion.
-    If the user does not exist, responds with 404 Not Found.
+    Handles user retrieval, updating, and deletion:
+    - GET: Retrieves the details of a user by their ID.
+      Responds with the user's username. If the user is not found, returns a 404 Not Found status.
+    - PATCH: Updates the username of the user with the specified ID.
+      Requires a `username` field in the request body. Responds with the updated username on success.
+      Responds with 400 Bad Request if the `username` field is missing.
+    - DELETE: Deletes the user with the specified ID.
+      Responds with a 204 No Content status on successful deletion.
     """
+    
+    user = get_object_or_404(CustomUser, id=id)
 
-    try:
-        user = CustomUser.objects.get(id = id)
+    if request.method == 'GET':
+        data = {
+            'username': user.username
+        }   
+        return Response(data)
+
+    elif request.method == 'PATCH':
+        username = request.data.get('username', None)
+        if username:
+            user.username = username
+            user.save()
+            return Response({'username': user.username})
+        return Response({'error': 'Username not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    except CustomUser.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
