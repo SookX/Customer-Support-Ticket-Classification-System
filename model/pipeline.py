@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from text_vectorization import train_tokenizer, random_vectorized_sample, stack_samples
 from utils import get_dataset_dimensions
+from model import MCC
 
 # Load the preprocessed data
 
@@ -37,4 +38,6 @@ y_test_final = np.expand_dims(y_test, axis = 1).T
 m, nx, ny = get_dataset_dimensions(X_train_final, y_train_final)
 print(f"Number of training samples: {m}\n")
 print(f"Number of input features: {nx}\n")
-print(f"Number of output labels: {ny}\n")
+
+multi_class_classifier = MCC(X_train_final, y_train_final, 1000, 0.005, [500, 10, 10, 16])
+multi_class_classifier.fit()
