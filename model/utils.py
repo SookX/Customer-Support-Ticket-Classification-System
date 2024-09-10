@@ -15,8 +15,8 @@ def get_dataset_dimensions(features, labels):
     - num_labels: The number of labels (columns) in the label dataset.
     """
 
-    num_samples = features.shape[0]  # Number of samples
-    num_features = features.shape[1]  # Number of features
+    num_samples = features.shape[1]  # Number of samples
+    num_features = features.shape[0]  # Number of features
     num_labels = labels.shape[0]     # Number of labels
     
     return num_samples, num_features, num_labels

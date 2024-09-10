@@ -27,8 +27,8 @@ vectorizer = train_tokenizer(train_sentences, MAX_TOKENS, OUTPUT_SEQ_LEN)
 
 # Reconstruct the data 
 
-X_train_final = stack_samples(train_sentences, vectorizer)
-X_test_final = stack_samples(test_sentences, vectorizer)
+X_train_final = stack_samples(train_sentences, vectorizer).T
+X_test_final = stack_samples(test_sentences, vectorizer).T
 y_train_final = np.expand_dims(y_train, axis = 1).T
 y_test_final = np.expand_dims(y_test, axis = 1).T
 
