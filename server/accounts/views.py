@@ -57,3 +57,20 @@ def user(request):
 #         'refresh': str(refresh),
 #         'access': str(refresh.access_token),    
 #     }, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def delete_user(request, id):
+    
+    """
+    Handles user deletion:
+    - DELETE: Deletes a user identified by their primary key (ID).
+    Responds with 204 No Content on successful deletion.
+    If the user does not exist, responds with 404 Not Found.
+    """
+
+    try:
+        user = CustomUser.objects.get(id = id)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except CustomUser.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
