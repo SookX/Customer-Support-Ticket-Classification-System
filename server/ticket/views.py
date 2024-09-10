@@ -43,3 +43,26 @@ def ticket_view(request):
     if request.method == "GET":
         data = Ticket.objects.values('id', 'subject', 'class_prediction', 'status')
         return Response(list(data), status=status.HTTP_200_OK)
+    
+@api_view(['GET'])
+def ticket_details(request, id):
+
+    """
+    Retrieves and returns the details of a specific ticket.
+
+    Args:
+    - request (Request): The incoming HTTP request.
+    - id (int): The unique identifier of the ticket.
+
+    Returns:
+    - Response: A JSON response containing the ticket's subject, class prediction, and status.
+    """
+
+    ticket = get_object_or_404(Ticket, id = id)
+
+    data = {
+            'subject': ticket.subject,
+            'class_prediction': ticket.class_prediction,
+            'status': ticket.status
+        }   
+    return Response(data)
