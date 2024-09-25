@@ -1,4 +1,5 @@
 from django.db import models
+from system.models import System
 
 class Ticket(models.Model):
     
@@ -15,3 +16,4 @@ class Ticket(models.Model):
     subject = models.CharField(max_length=512)
     class_prediction = models.CharField(max_length=256)
     status = models.BooleanField(default=1)
+    system = models.ForeignKey(System, on_delete=models.CASCADE, related_name="ticket_system", null=False)
