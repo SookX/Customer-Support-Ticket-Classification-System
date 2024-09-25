@@ -61,3 +61,81 @@ def system_view(request):
     if request.method == "GET":
         data = System.objects.values('id', 'name', 'holder__username', 'description', 'admins__username')
         return Response(list(data), status=status.HTTP_200_OK)
+    
+@api_view(['GET', 'PATCH', 'DELETE', 'POST'])
+def system_details(request, id):
+
+    """
+    Handles retrieval, partial updates, and deletion of a specific System record.
+
+    Methods:
+    - GET: 
+        - Retrieves the details of a specific system based on its ID.
+        - Returns a JSON object containing the system's name, the holder's username, the system's description, and a list of usernames of associated admins.
+
+    - PATCH: 
+        - Allows for partial updates of the system's fields.
+        - Updates the system's name and description if provided in the request.
+        - Adds new admins to the system without removing existing ones. If any admin IDs are provided, the corresponding users are retrieved and added as admins.
+        - Returns a success message upon successful update.
+
+    - DELETE: 
+        - Deletes the system identified by the provided ID.
+        - Returns a success message confirming the deletion.
+
+    - POST: 
+        - This method is not allowed for this endpoint and returns a 405 Method Not Allowed error.
+
+    Returns:
+    - GET:
+        - 200 OK: A JSON response with the system's details (name, holder username, description, and admins).
+        - 404 Not Found: If the system with the specified ID does not exist.
+
+    - PATCH:
+        - 200 OK: A JSON response with a success message indicating that the system was updated.
+        - 404 Not Found: If any specified admin ID does not exist.
+
+    - DELETE:
+        - 204 No Content: A success message indicating that the system was deleted.
+        - 404 Not Found: If the system with the specified ID does not exist.
+
+    - POST:
+        - 405 Method Not Allowed: Indicates that POST requests are not supported at this endpoint.
+    """
+    
+    system = get_object_or_404(System, id=id)
+
+    if request.method == "GET":
+        data = {
+            'name': system.name,
+            'holder': system.holder.username,
+            'description': system.description,
+            'admins': [admin.username for admin in system.admins.all()]
+        }
+        return Response(data)
+    
+    if request.method == "PATCH":
+        name = request.data.get('name')
+        description = request.data.get('description')
+        admins_ids = request.data.get('admins', [])
+
+        if name:
+            system.name = name
+        if description:
+            system.description = description
+
+        if admins_ids:
+            for admin_id in admins_ids:
+                admin = get_object_or_404(CustomUser, id=admin_id)
+                system.admins.add(admin)
+
+        system.save()
+
+        return Response({"message": "System updated successfully"}, status=status.HTTP_200_OK)
+    
+    if request.method == "DELETE":
+        system.delete()
+        return Response({"message": "System deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    
+    if request.method == "POST":
+        return Response({"error": "POST method not allowed for this endpoint"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
