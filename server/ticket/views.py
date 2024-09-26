@@ -6,8 +6,11 @@ from .models import Ticket
 import json
 from django.shortcuts import get_object_or_404
 from system.models import System
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 
 @api_view(['POST', 'GET'])
+@permission_classes([IsAuthenticated])
 def ticket_view(request):
    
     """
@@ -68,6 +71,7 @@ def ticket_view(request):
         return Response(list(data), status=status.HTTP_200_OK)
     
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def ticket_details(request, id):
 
     """

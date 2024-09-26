@@ -3,8 +3,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import System, CustomUser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 @api_view(['POST', 'GET'])
+@permission_classes([IsAuthenticated])
 def system_view(request):
     
     """
@@ -37,14 +41,13 @@ def system_view(request):
 
     if request.method == "POST":
         name = request.data.get('name')
-        holder_id  = request.data.get('holder')
         description = request.data.get('description')
         admins_ids = request.data.get('admins', [])
 
-        if not all([name, holder_id, description]):
+        if not all([name, description]):
             return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
         
-        holder = get_object_or_404(CustomUser, id=holder_id)
+        holder = request.user
 
         try:
             system = System.objects.create(name=name, holder=holder, description=description)
@@ -63,6 +66,7 @@ def system_view(request):
         return Response(list(data), status=status.HTTP_200_OK)
     
 @api_view(['GET', 'PATCH', 'DELETE', 'POST'])
+@permission_classes([IsAuthenticated])
 def system_details(request, id):
 
     """
