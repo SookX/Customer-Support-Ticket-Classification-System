@@ -5,8 +5,9 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser
-import json
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 
 @api_view(['POST', 'GET'])
 def user(request):
@@ -90,8 +91,10 @@ def register(request):
 
     return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
 
+
 @api_view(['GET', 'PATCH', 'DELETE'])
-def user_detail(request, id):
+@permission_classes([IsAuthenticated])
+def user_detail(request, id): 
     
     """
     Handles user retrieval, updating, and deletion:
