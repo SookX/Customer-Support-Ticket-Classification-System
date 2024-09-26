@@ -5,7 +5,6 @@ from django.shortcuts import get_object_or_404
 from .models import System, CustomUser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
 @api_view(['POST', 'GET'])
 @permission_classes([IsAuthenticated])
